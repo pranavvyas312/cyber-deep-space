@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Underwater Cyberpunk Experience</title>
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+  <!-- WebGL Canvas -->
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- Futuristic Cyberpunk HUD Container overlaid on top of canvas -->
+  <div class="hud-container">
+    <div class="hud-header">
+      <div class="hud-title">UNDERWATER CYBERPUNK CHRONICLES</div>
+      <div class="hud-status-wrapper">
+        <div class="hud-dot pulsing"></div>
+        <div class="hud-status">SYS_ACTIVE</div>
+      </div>
+    </div>
+
+    <div class="hud-telemetry">
+      <div class="telemetry-item">
+        <span class="label">COORDINATES</span>
+        <span class="value" id="hud-coords">X: 0.0, Y: 15.0, Z: 0.0</span>
+      </div>
+      <div class="telemetry-item">
+        <span class="label">DEPTH</span>
+        <span class="value" id="hud-depth">12.4m</span>
+      </div>
+      <div class="telemetry-item">
+        <span class="label">PRESSURE</span>
+        <span class="value" id="hud-pressure">1.01 atm</span>
+      </div>
+      <div class="telemetry-item">
+        <span class="label">BATTERY</span>
+        <span class="value" id="hud-battery">98.4%</span>
+      </div>
+    </div>
+
+    <div class="hud-scene-panel">
+      <div class="scene-label">ACTIVE SECTOR</div>
+      <div class="scene-title" id="hud-scene-title">SECTOR 1: INDUSTRIAL SURFACE HARBOR</div>
+      <p class="scene-desc" id="hud-scene-desc">
+        Navigating flooded cyberpunk harbors, monitoring submerged metallic scaffoldings and container cargo ruins under mild ocean currents.
+      </p>
+    </div>
+
+    <div class="hud-footer">
+      <div class="scroll-tracker">
+        <span class="scroll-label">DEPTH INDEX</span>
+        <div class="scroll-bar">
+          <div class="scroll-fill" id="hud-scroll-fill"></div>
+        </div>
+        <span class="scroll-percentage" id="hud-scroll-pct">0%</span>
+      </div>
+      <div class="scroll-instruction">SCROLL TO DESCEND / NAVIGATE</div>
+    </div>
+  </div>
+
+  <!-- Fake scroll volume container to generate a proper browser scrolling window -->
+  <div class="scroll-container">
+    <div class="scroll-section"></div>
+    <div class="scroll-section"></div>
+    <div class="scroll-section"></div>
+    <div class="scroll-section"></div>
+    <div class="scroll-section"></div>
+    <div class="scroll-section"></div>
+  </div>
+
+  <!-- Entry Script -->
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

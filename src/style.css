@@ -1,0 +1,267 @@
+/* Reset all margins, padding, and hide default scrollbars on body */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background-color: #01060f;
+  font-family: 'Courier New', Courier, monospace;
+  color: #00ffcc;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Custom scrollbar for scroll-container to keep UI futuristic but scrollable */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(1, 6, 15, 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background: #00ffcc;
+  border-radius: 3px;
+}
+
+/* Pin the WebGL Canvas perfectly fixed to the background */
+#webgl-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  touch-action: none; /* Prevent browser defaults on canvas swipe */
+  pointer-events: none; /* Allow scrolling on overlay containers */
+}
+
+/* Futuristic Cyberpunk HUD Container overlaid on top of canvas */
+.hud-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none; /* Let clicks/scroll pass through to the viewport */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px;
+}
+
+/* Allow interactive parts of HUD to register hover effects if needed, but not block scroll */
+.hud-header, .hud-telemetry, .hud-scene-panel, .hud-footer {
+  pointer-events: auto;
+  background: rgba(1, 10, 24, 0.7);
+  border: 1px solid rgba(0, 255, 204, 0.2);
+  padding: 16px;
+  border-radius: 4px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.05);
+}
+
+/* Header layout */
+.hud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hud-title {
+  font-weight: bold;
+  font-size: 16px;
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(0, 255, 204, 0.6);
+}
+
+.hud-status-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hud-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #00ffcc;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #00ffcc;
+}
+
+.pulsing {
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+.hud-status {
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* Telemetry Stats on Left Grid */
+.hud-telemetry {
+  position: absolute;
+  top: 100px;
+  left: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 240px;
+}
+
+.telemetry-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.telemetry-item .label {
+  color: #ff5500;
+  text-shadow: 0 0 4px rgba(255, 85, 0, 0.5);
+}
+
+.telemetry-item .value {
+  font-weight: bold;
+}
+
+/* Central Left Active Scene Narrative Panel */
+.hud-scene-panel {
+  position: absolute;
+  bottom: 120px;
+  left: 24px;
+  width: 320px;
+  border-left: 3px solid #ff5500;
+}
+
+.scene-label {
+  font-size: 10px;
+  color: #ff5500;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+
+.scene-title {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #fff;
+  text-shadow: 0 0 6px rgba(255,255,255,0.4);
+}
+
+.scene-desc {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #a0c0d0;
+  margin: 0;
+}
+
+/* Footer elements */
+.hud-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.scroll-tracker {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 60%;
+}
+
+.scroll-label {
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.scroll-bar {
+  flex-grow: 1;
+  height: 4px;
+  background: rgba(0, 255, 204, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.scroll-fill {
+  width: 0%;
+  height: 100%;
+  background: #ff5500;
+  box-shadow: 0 0 8px #ff5500;
+  transition: width 0.1s ease-out;
+}
+
+.scroll-percentage {
+  font-size: 12px;
+  font-weight: bold;
+  color: #ff5500;
+}
+
+.scroll-instruction {
+  font-size: 10px;
+  color: #88a8b8;
+  letter-spacing: 1px;
+  text-shadow: 0 0 2px rgba(136, 168, 184, 0.3);
+}
+
+/* Fake scroll volume container to generate a proper browser scrolling window */
+.scroll-container {
+  position: relative;
+  width: 100%;
+  height: 600vh; /* 6 stages of depth, each 100vh height */
+  z-index: 2; /* Sits above canvas, so mouse/touch scroll natively triggers */
+}
+
+.scroll-section {
+  width: 100%;
+  height: 100vh;
+}
+
+/* Responsive Customization for HUD */
+@media (max-width: 768px) {
+  .hud-container {
+    padding: 12px;
+  }
+  .hud-header {
+    padding: 10px;
+  }
+  .hud-title {
+    font-size: 13px;
+  }
+  .hud-telemetry {
+    top: 80px;
+    left: 12px;
+    width: 200px;
+    padding: 10px;
+  }
+  .hud-scene-panel {
+    bottom: 110px;
+    left: 12px;
+    width: calc(100% - 24px);
+    padding: 10px;
+  }
+  .hud-footer {
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    align-items: flex-start;
+  }
+  .scroll-tracker {
+    width: 100%;
+  }
+  .scroll-instruction {
+    font-size: 9px;
+  }
+}
