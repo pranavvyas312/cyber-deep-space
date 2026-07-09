@@ -5,7 +5,7 @@ export class Submarine {
     this.scene = scene;
     this.mesh = new THREE.Group();
 
-    // Assembling components
+    // Assemble all submarine drone parts
     this.initStructure();
     this.initSearchlights();
 
@@ -15,123 +15,192 @@ export class Submarine {
   }
 
   initStructure() {
-    // 1. Materials mimicking rugged carbon-fiber graphite hull and highly emissive orange electronics
-    const hullMaterial = new THREE.MeshStandardMaterial({
-      color: 0x1a2228,
-      roughness: 0.35,
+    // 1. Core Materials
+    // Carbon-gray rugged militaristic hull
+    const mainHullMat = new THREE.MeshStandardMaterial({
+      color: 0x161c22,
+      roughness: 0.4,
       metalness: 0.85,
     });
 
-    const frameMaterial = new THREE.MeshStandardMaterial({
-      color: 0x0e1317,
+    // Dark-weathered titanium framework
+    const frameMat = new THREE.MeshStandardMaterial({
+      color: 0x0a0e12,
       roughness: 0.5,
       metalness: 0.95,
     });
 
-    const orangeEmissiveMaterial = new THREE.MeshStandardMaterial({
-      color: 0xff4d00,
-      emissive: 0xff3c00,
-      emissiveIntensity: 2.2,
+    // Highly intense glowing orange emissive material for the sensor visor
+    const visorMat = new THREE.MeshStandardMaterial({
+      color: 0xff3a00,
+      emissive: 0xff4d00,
+      emissiveIntensity: 3.5,
       roughness: 0.1,
       metalness: 0.1,
     });
 
-    // 2. Main cylindrical drone fuselage
-    const mainHullGeo = new THREE.CylinderGeometry(2.2, 2.2, 7.5, 16);
-    // Rotate to align horizontally along the Z-axis
-    mainHullGeo.rotateX(Math.PI / 2);
-    const mainHull = new THREE.Mesh(mainHullGeo, hullMaterial);
-    mainHull.castShadow = true;
-    mainHull.receiveShadow = true;
-    this.mesh.add(mainHull);
+    // Cyan accent materials for thruster indicators
+    const cyanAccentMat = new THREE.MeshStandardMaterial({
+      color: 0x00ffcc,
+      emissive: 0x00ffcc,
+      emissiveIntensity: 1.5,
+    });
 
-    // 3. Side armor panel clusters (rectangular hard-edged shapes)
-    const armorGeo = new THREE.BoxGeometry(0.8, 3.2, 5.5);
-    const leftArmor = new THREE.Mesh(armorGeo, frameMaterial);
-    leftArmor.position.set(-2.4, 0, 0.4);
-    leftArmor.castShadow = true;
-    const rightArmor = leftArmor.clone();
-    rightArmor.position.x = 2.4;
-    this.mesh.add(leftArmor);
-    this.mesh.add(rightArmor);
+    // 2. Main Fuselage (Hard-edged geometric block)
+    const hullGroup = new THREE.Group();
 
-    // 4. Large glowing bright orange camera/sensor visor window at the nose
-    const noseGeo = new THREE.CylinderGeometry(2.2, 1.4, 1.5, 16);
-    noseGeo.rotateX(Math.PI / 2);
-    const nose = new THREE.Mesh(noseGeo, hullMaterial);
-    nose.position.set(0, 0, 4.2);
+    // Main structural box hull
+    const coreHullGeo = new THREE.BoxGeometry(3.6, 2.6, 7.0);
+    const coreHull = new THREE.Mesh(coreHullGeo, mainHullMat);
+    coreHull.castShadow = true;
+    coreHull.receiveShadow = true;
+    hullGroup.add(coreHull);
+
+    // Hard-edged wedge nose cone
+    const noseGeo = new THREE.BoxGeometry(3.0, 2.0, 1.8);
+    // Bevel front edge conceptually using a forward offset
+    const nose = new THREE.Mesh(noseGeo, mainHullMat);
+    nose.position.set(0, -0.1, 4.0); // Offset forward on Z axis
     nose.castShadow = true;
-    this.mesh.add(nose);
+    hullGroup.add(nose);
 
-    const visorGeo = new THREE.BoxGeometry(2.8, 0.6, 0.3);
-    const visor = new THREE.Mesh(visorGeo, orangeEmissiveMaterial);
-    // Position visor right on front surface of the nose cone
-    visor.position.set(0, 0.4, 4.9);
-    this.mesh.add(visor);
+    // Front Glowing Orange Visor (horizontal panoramic sensor strip)
+    const visorGeo = new THREE.BoxGeometry(2.4, 0.5, 0.25);
+    const visor = new THREE.Mesh(visorGeo, visorMat);
+    visor.position.set(0, 0.4, 4.9); // Flush with front of nose
+    hullGroup.add(visor);
 
-    // 5. Twin lateral thruster housings (rotatable rings) on each side
-    const thrusterRingGeo = new THREE.TorusGeometry(0.9, 0.3, 8, 16);
+    // 3. Side Armor Plates (Rugged angular armor panels)
+    const armorPlateGeo = new THREE.BoxGeometry(0.4, 1.8, 5.0);
 
-    this.leftThruster = new THREE.Group();
-    this.leftThruster.position.set(-3.2, 0, -1.2);
-    const leftRing = new THREE.Mesh(thrusterRingGeo, frameMaterial);
-    leftRing.rotation.y = Math.PI / 2;
-    this.leftThruster.add(leftRing);
+    // Left Armor Panel
+    const leftArmor = new THREE.Mesh(armorPlateGeo, frameMat);
+    leftArmor.position.set(-2.0, 0, 0);
+    leftArmor.castShadow = true;
 
-    // Add propeller blade inside thruster ring
-    const bladeGeo = new THREE.BoxGeometry(0.15, 1.4, 0.3);
-    this.leftBlade = new THREE.Mesh(bladeGeo, orangeEmissiveMaterial);
-    this.leftBlade.position.set(0, 0, 0);
-    this.leftThruster.add(this.leftBlade);
+    // Add mechanical ribs or decals to armor
+    const ribGeo = new THREE.BoxGeometry(0.5, 2.0, 0.3);
+    for (let r = 0; r < 3; r++) {
+      const rib = new THREE.Mesh(ribGeo, mainHullMat);
+      rib.position.set(-0.05, 0, -1.5 + r * 1.5);
+      leftArmor.add(rib);
+    }
+    hullGroup.add(leftArmor);
 
-    this.rightThruster = new THREE.Group();
-    this.rightThruster.position.set(3.2, 0, -1.2);
-    const rightRing = new THREE.Mesh(thrusterRingGeo, frameMaterial);
-    rightRing.rotation.y = Math.PI / 2;
-    this.rightThruster.add(rightRing);
+    // Right Armor Panel (cloned & offset)
+    const rightArmor = leftArmor.clone();
+    rightArmor.position.x = 2.0;
+    // Mirror scale adjust so ribs sit correctly on outer side
+    rightArmor.children.forEach(child => child.position.x = 0.05);
+    hullGroup.add(rightArmor);
 
-    this.rightBlade = new THREE.Mesh(bladeGeo, orangeEmissiveMaterial);
-    this.rightBlade.position.set(0, 0, 0);
-    this.rightThruster.add(this.rightBlade);
+    // 4. Rear Propulsion Systems: Dual Rear Propeller Shrouds (with inside blades)
+    this.propellerGroup = new THREE.Group();
+    this.propellerGroup.position.set(0, 0, -3.5);
 
-    this.mesh.add(this.leftThruster);
-    this.mesh.add(this.rightThruster);
+    // Left Propeller Shroud (cylindrical ring duct)
+    const shroudGeo = new THREE.CylinderGeometry(1.2, 1.2, 1.4, 12, 1, true); // open-ended cylinder
+    shroudGeo.rotateX(Math.PI / 2); // align along Z axis
 
-    // 6. Vertical stabilizer fin at the tail
-    const stabilizerGeo = new THREE.BoxGeometry(0.2, 2.5, 2.0);
-    const stabilizer = new THREE.Mesh(stabilizerGeo, frameMaterial);
-    stabilizer.position.set(0, 2.0, -3.2);
-    stabilizer.castShadow = true;
-    this.mesh.add(stabilizer);
+    this.leftShroud = new THREE.Group();
+    this.leftShroud.position.set(-1.4, 0, -1.0);
+
+    const leftShroudMesh = new THREE.Mesh(shroudGeo, frameMat);
+    leftShroudMesh.castShadow = true;
+    this.leftShroud.add(leftShroudMesh);
+
+    // Inside blades (four bladed propeller)
+    const bladeGeo = new THREE.BoxGeometry(0.18, 1.8, 0.3);
+    this.leftPropBlades = new THREE.Group();
+
+    const blade1 = new THREE.Mesh(bladeGeo, cyanAccentMat);
+    const blade2 = blade1.clone();
+    blade2.rotation.z = Math.PI / 2;
+
+    this.leftPropBlades.add(blade1);
+    this.leftPropBlades.add(blade2);
+    this.leftShroud.add(this.leftPropBlades);
+
+    // Right Propeller Shroud
+    this.rightShroud = new THREE.Group();
+    this.rightShroud.position.set(1.4, 0, -1.0);
+
+    const rightShroudMesh = leftShroudMesh.clone();
+    this.rightShroud.add(rightShroudMesh);
+
+    this.rightPropBlades = new THREE.Group();
+    const blade3 = blade1.clone();
+    const blade4 = blade2.clone();
+    this.rightPropBlades.add(blade3);
+    this.rightPropBlades.add(blade4);
+    this.rightShroud.add(this.rightPropBlades);
+
+    this.propellerGroup.add(this.leftShroud);
+    this.propellerGroup.add(this.rightShroud);
+    hullGroup.add(this.propellerGroup);
+
+    // 5. Vertical Stabilizer Fins
+    const finGeo = new THREE.BoxGeometry(0.15, 1.6, 1.8);
+    finGeo.rotateX(-Math.PI / 12); // swept stabilizer fin
+    const upperFin = new THREE.Mesh(finGeo, frameMat);
+    upperFin.position.set(0, 1.8, -2.8);
+    upperFin.castShadow = true;
+    hullGroup.add(upperFin);
+
+    const lowerFin = upperFin.clone();
+    lowerFin.position.y = -1.8;
+    lowerFin.rotation.x = Math.PI / 6;
+    hullGroup.add(lowerFin);
+
+    // Add everything to main mesh group
+    this.mesh.add(hullGroup);
   }
 
   initSearchlights() {
-    // Twin bright cyan-blue searchlights acting as the vehicle's forward sensors
+    // Twin highly intense cyan searchlights acting as forward visual sensors
     const lightColor = 0x00ffff;
-    const intensity = 8.5;
-    const distance = 45;
-    const angle = Math.PI / 5.5; // focused beam cone
-    const penumbra = 0.5; // soft edges
+    const intensity = 12.0;
+    const distance = 55;
+    const angle = Math.PI / 6.0; // focused narrow beam cone
+    const penumbra = 0.45; // slightly soft edge fallback
 
-    // Left Headlight
+    // Left Headlight Projector Mesh
+    const projectorGeo = new THREE.CylinderGeometry(0.3, 0.4, 0.8, 8);
+    projectorGeo.rotateX(Math.PI / 2);
+    const projectorMat = new THREE.MeshStandardMaterial({
+      color: 0x0f1318,
+      roughness: 0.3,
+      metalness: 0.9
+    });
+
+    const leftProjector = new THREE.Mesh(projectorGeo, projectorMat);
+    leftProjector.position.set(-1.2, -0.6, 4.3);
+    this.mesh.add(leftProjector);
+
+    // Right Headlight Projector Mesh
+    const rightProjector = leftProjector.clone();
+    rightProjector.position.x = 1.2;
+    this.mesh.add(rightProjector);
+
+    // Left SpotLight
     this.leftLight = new THREE.SpotLight(lightColor, intensity, distance, angle, penumbra, 1.0);
-    this.leftLight.position.set(-1.4, -0.6, 4.2);
+    this.leftLight.position.set(-1.2, -0.6, 4.4);
     this.leftLight.castShadow = true;
-    this.leftLight.shadow.mapSize.width = 512;
-    this.leftLight.shadow.mapSize.height = 512;
+    this.leftLight.shadow.mapSize.width = 1024;
+    this.leftLight.shadow.mapSize.height = 1024;
 
-    // Right Headlight
+    // Right SpotLight
     this.rightLight = new THREE.SpotLight(lightColor, intensity, distance, angle, penumbra, 1.0);
-    this.rightLight.position.set(1.4, -0.6, 4.2);
+    this.rightLight.position.set(1.2, -0.6, 4.4);
     this.rightLight.castShadow = true;
-    this.rightLight.shadow.mapSize.width = 512;
-    this.rightLight.shadow.mapSize.height = 512;
+    this.rightLight.shadow.mapSize.width = 1024;
+    this.rightLight.shadow.mapSize.height = 1024;
 
-    // Configure local light targets to point forward relative to submarine nose orientation
+    // Headlight Targets pointing forward in Z direction
     this.leftTarget = new THREE.Object3D();
-    this.leftTarget.position.set(-1.4, -1.2, 25);
+    this.leftTarget.position.set(-1.2, -1.0, 30);
     this.rightTarget = new THREE.Object3D();
-    this.rightTarget.position.set(1.4, -1.2, 25);
+    this.rightTarget.position.set(1.2, -1.0, 30);
 
     this.mesh.add(this.leftTarget);
     this.mesh.add(this.rightTarget);
@@ -142,52 +211,59 @@ export class Submarine {
     this.mesh.add(this.leftLight);
     this.mesh.add(this.rightLight);
 
-    // Add bright volumetric cylinder cones visual helpers to represent scattering light through murky water
-    const beamGeo = new THREE.CylinderGeometry(0.1, 4.5, 20, 16, 1, true);
+    // Volumetric glowing beams representing volumetric scattering through deep sea water
+    const beamGeo = new THREE.CylinderGeometry(0.12, 5.0, 24, 16, 1, true);
     beamGeo.rotateX(Math.PI / 2);
-    beamGeo.translate(0, 0, 10); // Offset geometry forward
+    beamGeo.translate(0, 0, 12); // Offset origin forward so cylinder starts exactly at projector face
 
     const beamMaterial = new THREE.MeshBasicMaterial({
       color: 0x00ffcc,
       transparent: true,
-      opacity: 0.12,
+      opacity: 0.16, // distinct atmospheric beam
       blending: THREE.AdditiveBlending,
       side: THREE.DoubleSide,
       depthWrite: false
     });
 
-    const leftBeam = new THREE.Mesh(beamGeo, beamMaterial);
-    leftBeam.position.set(-1.4, -0.6, 4.2);
-    const rightBeam = leftBeam.clone();
-    rightBeam.position.set(1.4, -0.6, 4.2);
+    this.leftBeam = new THREE.Mesh(beamGeo, beamMaterial);
+    this.leftBeam.position.set(-1.2, -0.6, 4.4);
 
-    this.mesh.add(leftBeam);
-    this.mesh.add(rightBeam);
+    this.rightBeam = this.leftBeam.clone();
+    this.rightBeam.position.set(1.2, -0.6, 4.4);
+
+    this.mesh.add(this.leftBeam);
+    this.mesh.add(this.rightBeam);
   }
 
   update(time, scrollProgress) {
-    // 1. Spin the thruster propeller blades over time
-    if (this.leftBlade && this.rightBlade) {
-      // Blade spin rate ramps up dynamically based on speed / scrolling motion
-      this.leftBlade.rotation.x += 0.25;
-      this.rightBlade.rotation.x += 0.25;
+    // 1. Rapidly rotate propeller blades inside the dual shrouds
+    if (this.leftPropBlades && this.rightPropBlades) {
+      // Rotate dynamically - spinning blades indicate thrusters running
+      const spinSpeed = 0.35 + (scrollProgress * 0.15);
+      this.leftPropBlades.rotation.z += spinSpeed;
+      this.rightPropBlades.rotation.z -= spinSpeed; // counter-rotate for stability
     }
 
-    // 2. Procedural Buoyancy Animation mimicking actual water dynamics (Sine/Cosine oscillation)
-    // We influence height (Y-coordinate offset), and small rotational pitch and yaw swings
-    const hoverOffset = Math.sin(time * 1.4) * 0.28;
-    const pitchOffset = Math.sin(time * 0.8) * 0.025;
-    const yawOffset = Math.cos(time * 0.6) * 0.02;
+    // 2. Procedural Buoyancy Simulation (sinusoidal underwater physics)
+    const hoverOffset = Math.sin(time * 1.5) * 0.25;
+    const pitchOffset = Math.sin(time * 0.9) * 0.03;
+    const yawOffset = Math.cos(time * 0.7) * 0.02;
 
-    // Apply buoyancy offset safely so it interacts with scroll translation paths in main.js
-    this.mesh.position.y += hoverOffset * 0.04;
+    // Add minor position sway & tilt
+    this.mesh.position.y += hoverOffset * 0.045;
     this.mesh.rotation.x = pitchOffset;
     this.mesh.rotation.y = yawOffset;
-    this.mesh.rotation.z = Math.sin(time * 1.2) * 0.012; // Roll sway
+    this.mesh.rotation.z = Math.sin(time * 1.3) * 0.015;
 
-    // 3. Modulate headlight spotlights dynamically to simulate water turbidity and bioluminescent jitter
-    const flicker = 1.0 + Math.sin(time * 8.0) * 0.08;
-    this.leftLight.intensity = 8.5 * flicker;
-    this.rightLight.intensity = 8.5 * flicker;
+    // 3. Modulate headlights & volumetric beam intensities to match underwater turbidity and jitter
+    const flicker = 1.0 + Math.sin(time * 9.0) * 0.06;
+    this.leftLight.intensity = 12.0 * flicker;
+    this.rightLight.intensity = 12.0 * flicker;
+
+    if (this.leftBeam && this.rightBeam) {
+      const beamPulse = 0.16 + Math.sin(time * 4.5) * 0.02;
+      this.leftBeam.material.opacity = beamPulse;
+      this.rightBeam.material.opacity = beamPulse;
+    }
   }
 }
